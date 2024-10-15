@@ -2,3 +2,37 @@
 
 # Do stuff with branches
 
+class TestTrigAndRootFunctions(unittest.TestCase):
+
+    # Trigonometric Function Tests
+    def test_sin(self):
+        self.assertAlmostEqual(sin(math.pi / 2), 1, places=5)
+        self.assertAlmostEqual(sin(0), 0, places=5)
+        self.assertAlmostEqual(sin(math.pi), 0, places=5)
+
+    def test_cos(self):
+        self.assertAlmostEqual(cos(math.pi), -1, places=5)
+        self.assertAlmostEqual(cos(0), 1, places=5)
+        self.assertAlmostEqual(cos(math.pi / 2), 0, places=5)
+
+    def test_tan(self):
+        self.assertAlmostEqual(tan(0), 0, places=5)
+        self.assertAlmostEqual(tan(math.pi / 4), 1, places=5)
+        with self.assertRaises(ValueError):  # Test for undefined tangent
+            tan(math.pi / 2)
+
+    # Root Function Tests
+    def test_square_root(self):
+        self.assertEqual(square_root(16), 4)
+        self.assertEqual(square_root(0), 0)
+        self.assertAlmostEqual(square_root(-4), cmath.sqrt(-4))
+
+    def test_nth_root(self):
+        self.assertEqual(nth_root(27, 3), 3)      # Cube root of 27
+        self.assertEqual(nth_root(16, 4), 2)      # Fourth root of 16
+        self.assertAlmostEqual(nth_root(-27, 3), -3)  # Cube root of -27
+        with self.assertRaises(ValueError):       # Test for even root of negative
+            nth_root(-16, 2)
+    
+    def test_nth_root_complex(self):
+        self.assertAlmostEqual(nth_root(-8, 3), -2)   # Test for negative number with odd root
