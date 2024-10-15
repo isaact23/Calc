@@ -4,6 +4,7 @@
 
 import math
 import cmath
+import unittest
 
 def sin(x):
     """
@@ -72,14 +73,19 @@ class TestTrigAndRootFunctions(unittest.TestCase):
         self.assertEqual(square_root(16), 4)
         self.assertEqual(square_root(0), 0)
         self.assertAlmostEqual(square_root(-4), cmath.sqrt(-4))
+        result = square_root(-4)
+        self.assertAlmostEqual(result.real, 0)
+        self.assertAlmostEqual(result.imag, 2)
 
     def test_nth_root(self):
         self.assertEqual(nth_root(27, 3), 3)      # Cube root of 27
         self.assertEqual(nth_root(16, 4), 2)      # Fourth root of 16
         self.assertAlmostEqual(nth_root(-27, 3), -3)  # Cube root of -27
+        self.assertAlmostEqual(nth_root(8, 1.5), 4)   # Non-integer root test
+        self.assertAlmostEqual(nth_root(1e9, 3), 1000) # Large exponent test
         with self.assertRaises(ValueError):       # Test for even root of negative
             nth_root(-16, 2)
     
     def test_nth_root_complex(self):
-        self.assertAlmostEqual(nth_root(-8, 3), -2)   # Test for negative number with odd root
-
+        result = nth_root(-8, 3)
+        self.assertAlmostEqual(result, -2)   # Test for negative number with odd root
