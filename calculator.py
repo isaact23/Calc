@@ -1,5 +1,6 @@
 import math
 import re
+import cmath
 
 # Define operator precedence
 precedence = {
@@ -37,18 +38,18 @@ def apply_operator(operators, values):
     elif operator == '^':
         b = values.pop()
         a = values.pop()
-        values.append(math.pow(a, b))
-    elif operator == '√':  # nth root
+        values.append(a ** b)  # Using the built-in power operator
+    elif operator == '√':  # nth root or square root
         a = values.pop()
         n = values.pop() if values else 2  # Default to square root if no explicit 'n'
-        values.append(math.pow(a, 1/n))
+        values.append(nth_root(a, n))  # Use the custom nth_root function
     # Handle trigonometric functions
     elif operator == 'sin':
-        values.append(math.sin(values.pop()))
+        values.append(sin(values.pop()))  # Use the custom sin function
     elif operator == 'cos':
-        values.append(math.cos(values.pop()))
+        values.append(cos(values.pop()))  # Use the custom cos function
     elif operator == 'tan':
-        values.append(math.tan(values.pop()))
+        values.append(tan(values.pop()))  # Use the custom tan function
 
 # Function to evaluate an expression
 def evaluate_expression(expression):
@@ -112,7 +113,7 @@ print(result1)  # Should output 11.56
 
 expression2 = "5 ➗ 0"
 result2 = evaluate_expression(expression2)
-print(result2)  # Should output undefined
+print(result2)  # Should output 'undefined'
 
 expression3 = "3√(27)"
 result3 = evaluate_expression(expression3)
