@@ -59,14 +59,14 @@ def tan(x):
 
 def nth_root(x, n):
     if x < 0 and n % 2 == 0:
-        return "undefined"  # Undefined for even roots of negative numbers
+        return None  # Undefined for even roots of negative numbers
     elif x < 0 and n % 2 != 0:
         return -(-x) ** (1 / n)  # Negative number with odd root
     return x ** (1 / n)
 
 def square_root(x):
     if x < 0:
-        return "undefined"  # Instead of returning complex
+        return None  # Instead of returning complex
     return math.sqrt(x)
 
 
