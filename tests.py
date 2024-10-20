@@ -16,7 +16,7 @@ def test_expressions(filename):
                 result = evaluate_expression(lhs)
                 print("Got " + str(result))
                 if expected is None:
-                    assert result == "undefined"
+                    assert result is None
                 else:
                     assert pytest.approx(expected) == result
                 print("Line passed")
