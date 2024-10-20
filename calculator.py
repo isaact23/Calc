@@ -86,7 +86,7 @@ def apply_operator(operators, values):
             a = values.pop()
             values.append(a + b if operator == "+" else a - b)
     
-    elif operator in ["*", "✕", "âž—", "âœ•"]:
+    elif operator in ["*", "✕"]:
         if len(values) < 2:
             return
         b = values.pop()
@@ -99,7 +99,7 @@ def apply_operator(operators, values):
         else:
             values.append(a * b)
     
-    elif operator in ["/", "➗", "Ã·"]:
+    elif operator in ["/", "➗"]:
         if len(values) < 2:
             return
         b = values.pop()
@@ -116,8 +116,6 @@ def apply_operator(operators, values):
         except (ZeroDivisionError, OverflowError):
             values.append("undefined")
 
-
-    
     elif operator == "^":
         if len(values) < 2:
             return
@@ -169,23 +167,8 @@ def apply_operator(operators, values):
         except ValueError:
             values.append("undefined")
 
-def normalize_expression(expression):
-    replacements = {
-        'âž—': '*',
-        'âœ•': '*',
-        '➗': '/',
-        'âˆš': '√',  # Fix square root symbol
-        'Ã·': '/',
-        'âˆ': '-'   # Fix negative symbol
-    }
-    for unicode_char, ascii_char in replacements.items():
-        expression = expression.replace(unicode_char, ascii_char)
-    return expression
-
 
 def tokenize(expression):
-    expression = normalize_expression(expression)
-    
     # Handle spaces and implicit multiplication
     expression = re.sub(r'\)\s*\(', ')*(', expression)  # Handle implicit multiplication: ")("
     expression = re.sub(r'(\d+|\))\s*\(', r'\1*(', expression)  # Handle cases like "2(" as "2*("
@@ -298,9 +281,6 @@ precedence = {
     "/": 2,
     "✕": 2,
     "➗": 2,
-    "âž—": 2,
-    "âœ•": 2,
-    "Ã·": 2,
     "sin": 3,
     "cos": 3,
     "tan": 3,
