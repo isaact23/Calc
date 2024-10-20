@@ -112,9 +112,13 @@ def apply_operator(operators, values):
     if operator == "+":
         values.append(values.pop() + values.pop())
     elif operator == "-":
-        b = values.pop()
-        a = values.pop()
-        values.append(a - b)
+        if not values or not isinstance(values[-1], (int, float)):
+            # If there are no values or the previous value is not a number, it's a negation
+            values.append(-values.pop())
+        else:
+            b = values.pop()
+            a = values.pop()
+            values.append(a - b)
     elif operator == "✕" or operator == "*":
         values.append(values.pop() * values.pop())
     elif operator == "➗" or operator == "/":

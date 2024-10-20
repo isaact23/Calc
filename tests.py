@@ -2,6 +2,8 @@ from calculator import evaluate_expression
 import pytest
 
 def test_expressions(filename):
+    anyFail = False
+
     with open(filename, 'r') as f:
         for line in f:
             print("Testing " + line, end="")
@@ -18,11 +20,16 @@ def test_expressions(filename):
                 else:
                     assert pytest.approx(expected) == result
                 print("Line passed")
-            except:
+            except Exception as e:
+                print(str(e))
                 print("Line failed")
+                anyFail = True
             print()
 
-    print("All test cases passed")
+    if anyFail:
+        print("Some tests failed")
+    else:
+        print("All test cases passed")
 
 if __name__ == "__main__":
     test_expressions("tests.txt")
