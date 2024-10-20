@@ -3,7 +3,6 @@ import re
 import cmath
 import unittest
 
-
 def add(a, b):
     return a + b
 
@@ -96,6 +95,8 @@ precedence = {
     "-": 1,
     "✕": 2,
     "➗": 2,
+    "*": 2,
+    "/": 2,
     "sin": 3,
     "cos": 3,
     "tan": 3,
@@ -114,9 +115,9 @@ def apply_operator(operators, values):
         b = values.pop()
         a = values.pop()
         values.append(a - b)
-    elif operator == "✕":
+    elif operator == "✕" or operator == "*":
         values.append(values.pop() * values.pop())
-    elif operator == "➗":
+    elif operator == "➗" or operator == "/":
         b = values.pop()
         a = values.pop()
         if b == 0:
@@ -185,7 +186,7 @@ def is_number(token):
 # Helper function to tokenize input, including handling nth roots and Unicode characters
 def tokenize(expression):
     # Tokenize the input expression using regular expressions
-    token_pattern = r"(\d+\.?\d*|[+\-✕➗\^√()]|sin|cos|tan|\d+√)"
+    token_pattern = r"(\d+\.?\d*|[+\-✕➗*/\^√()]|sin|cos|tan|\d+√)"
     tokens = re.findall(token_pattern, expression)
 
     # Handle nth root like '3√' by splitting it into '3', '√'
