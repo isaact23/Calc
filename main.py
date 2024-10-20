@@ -8,7 +8,10 @@ def main():
         print("Enter your equation: ")
         exp = input()
     res = evaluate_expression(exp)
-    print("The result is " + str(res))
+    if (res is None):
+        print("undefined")
+    else:
+        print(str(res))
 
 if __name__ == "__main__":
     main()

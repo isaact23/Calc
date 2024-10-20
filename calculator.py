@@ -32,6 +32,8 @@ def square(a):
 def power(a, n):
     try:
         result = a**n
+        if isinstance(result, complex):
+            return None
         return result
     except:
         return None
