@@ -1,3 +1,5 @@
+import math
+
 class Calculator:
     
     @staticmethod
