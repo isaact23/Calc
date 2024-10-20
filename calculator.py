@@ -2,6 +2,80 @@ import math
 import re
 import cmath
 import unittest
+
+def add(a, b):
+    return a + b
+
+def subtract(a, b):
+    return a - b
+
+def multiply(a, b):
+    return a * b
+
+def divide(a, b):
+    try:
+        return a / b
+    except ZeroDivisionError:
+        return "Error: Cannot divide by zero."
+
+def square(a):
+    result = a * a
+    if abs(result) == float('inf'):
+        return "Error: Overflow occurred."
+    return result
+
+def power(a, n):
+    try:
+        result = a ** n
+        if result == float('inf') or result == float('-inf'):
+            return "Error: Overflow occurred."
+        return result
+    except OverflowError:
+        return "Error: Overflow occurred."
+
+def sin(x):
+    """
+    Calculate the sine of x (in radians).
+    """
+    return math.sin(x)
+
+def cos(x):
+    """
+    Calculate the cosine of x (in radians).
+    """
+    return math.cos(x)
+
+def tan(x):
+    """
+    Calculate the tangent of x (in radians).
+    Raises ValueError for x values that result in undefined tangent.
+    """
+    if abs(cos(x)) < 1e-15:  # Close to zero
+        raise ValueError("Tangent is undefined for this input.")
+    return math.tan(x)
+
+def square_root(x):
+    """
+    Calculate the square root of x.
+    Returns a complex number if x is negative.
+    """
+    if x < 0:
+        return cmath.sqrt(x)
+    return math.sqrt(x)
+
+def nth_root(x, n):
+    """
+    Calculate the nth root of x.
+    Raises ValueError for even roots of negative numbers.
+    Returns a complex number for odd roots of negative numbers.
+    """
+    if x < 0:
+        if n % 2 == 0:
+            raise ValueError("Even root of a negative number is undefined in the real domain.")
+        else:
+            return -(-x) ** (1/n)
+    return x ** (1/n)
+
 # Define operator precedence
 precedence = {
     '+': 1,
@@ -106,74 +180,6 @@ def tokenize(expression):
 
     return processed_tokens
 
-# Example usage:
-expression1 = "((3.5 + 4.9) - (10 ➗ 2)) ✕ 3.40"
-result1 = evaluate_expression(expression1)
-print(result1)  # Should output 11.56
-
-expression2 = "5 ➗ 0"
-result2 = evaluate_expression(expression2)
-print(result2)  # Should output 'undefined'
-
-expression3 = "3√(27)"
-result3 = evaluate_expression(expression3)
-print(result3)  # Should output 3 (cube root of 27)
-
-expression4 = "9999^9"
-result4 = evaluate_expression(expression4)
-print(result4)  # Should output a large number
-
-expression5 = "2√(25)"
-result5 = evaluate_expression(expression5)
-print(result5)  # Should output 5 (square root of 25)
-
-expression6 = "4√(625)"
-result6 = evaluate_expression(expression6)
-print(result6)  # Should output 5 (fourth root of 625)
-
-def sin(x):
-    """
-    Calculate the sine of x (in radians).
-    """
-    return math.sin(x)
-
-def cos(x):
-    """
-    Calculate the cosine of x (in radians).
-    """
-    return math.cos(x)
-
-def tan(x):
-    """
-    Calculate the tangent of x (in radians).
-    Raises ValueError for x values that result in undefined tangent.
-    """
-    if abs(cos(x)) < 1e-15:  # Close to zero
-        raise ValueError("Tangent is undefined for this input.")
-    return math.tan(x)
-
-def square_root(x):
-    """
-    Calculate the square root of x.
-    Returns a complex number if x is negative.
-    """
-    if x < 0:
-        return cmath.sqrt(x)
-    return math.sqrt(x)
-
-def nth_root(x, n):
-    """
-    Calculate the nth root of x.
-    Raises ValueError for even roots of negative numbers.
-    Returns a complex number for odd roots of negative numbers.
-    """
-    if x < 0:
-        if n % 2 == 0:
-            raise ValueError("Even root of a negative number is undefined in the real domain.")
-        else:
-            return -(-x) ** (1/n)
-    return x ** (1/n)
-
 class TestTrigAndRootFunctions(unittest.TestCase):
 
     # Trigonometric Function Tests
@@ -214,3 +220,6 @@ class TestTrigAndRootFunctions(unittest.TestCase):
     def test_nth_root_complex(self):
         result = nth_root(-8, 3)
         self.assertAlmostEqual(result, -2)   # Test for negative number with odd root
+
+if __name__ == '__main__':
+    unittest.main()
