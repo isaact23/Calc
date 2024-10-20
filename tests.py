@@ -6,10 +6,21 @@ def test_expressions(filename):
         for line in f:
             print("Testing " + line, end="")
             lhs, rhs = line.strip().split('=')
-            expected = float(rhs)
-            result = evaluate_expression(lhs)
-            assert pytest.approx(expected) == result
-            print("Line passed")
+            if rhs == 'undefined':
+                expected = None
+            else:
+                expected = float(rhs)
+            try:
+                result = evaluate_expression(lhs)
+                print("Got " + str(result))
+                if expected is None:
+                    assert result is None
+                else:
+                    assert pytest.approx(expected) == result
+                print("Line passed")
+            except:
+                print("Line failed")
+            print()
 
     print("All test cases passed")
 
