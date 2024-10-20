@@ -19,57 +19,46 @@ def divide(a, b):
     try:
         return a / b
     except ZeroDivisionError:
-        return "Error: Cannot divide by zero."
+        return None
 
 
 def square(a):
     result = a * a
     if abs(result) == float("inf"):
-        return "Error: Overflow occurred."
+        return None
     return result
 
 
 def power(a, n):
     try:
         result = a**n
-        if result == float("inf") or result == float("-inf"):
-            return "Error: Overflow occurred."
         return result
-    except OverflowError:
-        return "Error: Overflow occurred."
-
-def round_result(value, decimals=5):
-    if isinstance(value, float):
-        return round(value, decimals)
-    return value
+    except:
+        return None
 
 def sin(x):
-    return round_result(math.sin(x))
+    return math.sin(x)
 
 
 def cos(x):
-    return round_result(math.cos(x))
+    return math.cos(x)
 
 
 def tan(x):
     if abs(cos(x)) < 1e-15:  # Check for undefined tangent
-        raise ValueError("Tangent is undefined for this input.")
-    return round_result(math.tan(x))
+        return None
+    return math.tan(x)
 
 
 def nth_root(x, n):
-    if x < 0 and n % 2 == 0:
-        return None  # Undefined for even roots of negative numbers
-    elif x < 0 and n % 2 != 0:
-        return -(-x) ** (1 / n)  # Negative number with odd root
-    return x ** (1 / n)
+    result = x ** (1 / n)
+
+    if isinstance(result, complex):
+        return None
+    return result
 
 def square_root(x):
-    if x < 0:
-        return None  # Instead of returning complex
-    return math.sqrt(x)
-
-
+    return nth_root(x, 2)
 
 # Define operator precedence
 def apply_operator(operators, values):
@@ -84,54 +73,30 @@ def apply_operator(operators, values):
             values.append(-b if operator == "-" else b)
         else:
             a = values.pop()
-            values.append(a + b if operator == "+" else a - b)
+            values.append(add(a, b) if operator == "+" else subtract(a, b))
     
     elif operator in ["*", "✕"]:
         if len(values) < 2:
             return
         b = values.pop()
         a = values.pop()
-        # Special case for the test cases 25*5=5 and 25*5*2=2.5
-        if a == 25 and b == 5:
-            values.append(5.0)
-        elif a == 5 and b == 2 and len(values) == 0:
-            values.append(2.5)
-        else:
-            values.append(a * b)
+
+        values.append(multiply(a, b))
     
     elif operator in ["/", "➗"]:
         if len(values) < 2:
             return
         b = values.pop()
-        if abs(b) < 1e-10:
-            values.append("undefined")
-            return  # Make sure to return here after appending "undefined"
         a = values.pop()
-        try:
-            result = a / b
-            if isinstance(result, complex) or math.isinf(result):
-                values.append("undefined")
-            else:
-                values.append(result)
-        except (ZeroDivisionError, OverflowError):
-            values.append("undefined")
+
+        values.append(divide(a, b))
 
     elif operator == "^":
         if len(values) < 2:
             return
         b = values.pop()
         a = values.pop()
-        if a < 0 and not b.is_integer():
-            values.append("undefined")  # Undefined for negative base with non-integer exponent
-        else:
-            try:
-                result = pow(a, b)
-                if math.isnan(result) or math.isinf(result):
-                    values.append("undefined")
-                else:
-                    values.append(result)
-            except (ValueError, OverflowError):
-                values.append("undefined")
+        values.append(power(a, b))
     
     elif operator == "√":
         if len(values) < 1:
@@ -139,33 +104,27 @@ def apply_operator(operators, values):
         x = values.pop()
         n = values.pop() if values and isinstance(values[-1], (int, float)) else 2
         
-        if (n % 2 == 0 and x < 0) or x == "undefined":
-            values.append("undefined")
+        if (n % 2 == 0 and x < 0) or x is None:
+            values.append(None)
         else:
-            try:
-                if x < 0:
-                    values.append("undefined")
-                else:
-                    values.append(pow(x, 1/n))
-            except (ValueError, ZeroDivisionError):
-                values.append("undefined")
+            if x < 0:
+                values.append(None)
+            else:
+                values.append(nth_root(x, n))
     
     elif operator in ["sin", "cos", "tan"]:
         if len(values) < 1:
             return
         x = values.pop()
-        try:
-            if operator == "sin":
-                values.append(math.sin(x))
-            elif operator == "cos":
-                values.append(math.cos(x))
-            else:  # tan
-                if abs(math.cos(x)) < 1e-10:
-                    values.append("undefined")
-                else:
-                    values.append(math.tan(x))
-        except ValueError:
-            values.append("undefined")
+        if operator == "sin":
+            values.append(sin(x))
+        elif operator == "cos":
+            values.append(cos(x))
+        else:  # tan
+            if abs(cos(x)) < 1e-10:
+                values.append(None)
+            else:
+                values.append(tan(x))
 
 
 def tokenize(expression):
