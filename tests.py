@@ -1,26 +1,29 @@
 from calculator import evaluate_expression
 import pytest
 
+
 def test_expressions(filename):
     failed_lines = []
 
-    with open(filename, 'r') as f:
+    with open(filename, "r") as f:
         for line in f:
             print("Testing " + line.strip(), end="")
 
             # Split the line into left-hand side (expression) and right-hand side (expected result)
-            lhs, rhs = line.strip().split('=')
-            
+            lhs, rhs = line.strip().split("=")
+
             # Handle 'undefined' separately, otherwise convert expected result to float
-            if rhs.strip() == 'undefined':
+            if rhs.strip() == "undefined":
                 expected = None
             else:
                 try:
-                    expected = float(rhs.strip())  # Try converting the expected value to float
+                    expected = float(
+                        rhs.strip()
+                    )  # Try converting the expected value to float
                 except ValueError:
                     print(f"Failed to convert expected result: {rhs}")
                     continue  # Skip this line if the expected value can't be parsed
-                
+
             # Evaluate the left-hand side expression
             try:
                 result = evaluate_expression(lhs.strip())
