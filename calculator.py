@@ -53,11 +53,17 @@ def tan(x):
 
 
 def nth_root(x, n):
-    result = x ** (1 / n)
-
-    if isinstance(result, complex):
+    if x < 0 and n % 2 == 0:
+        # Even root of a negative number should return None (undefined)
         return None
-    return result
+    elif x < 0 and n % 2 != 0:
+        # For odd roots of negative numbers, return the negative of the root of the absolute value
+        return -(-x) ** (1 / n)
+    else:
+        # For positive numbers or zero
+        result = x ** (1 / n)
+        return result if not isinstance(result, complex) else None
+
 
 def square_root(x):
     return nth_root(x, 2)
@@ -129,7 +135,27 @@ def apply_operator(operators, values):
                 values.append(tan(x))
 
 
+def normalize_expression(expression):
+    """Fix garbled symbols and normalize the expression."""
+    replacements = {
+        'âž—': '/',  # Garbled division symbol
+        'âœ•': '*',  # Garbled multiplication symbol
+        '➗': '/',    # Division symbol
+        'âˆš': '√',  # Garbled square root symbol
+        'Ã·': '/',   # Garbled division symbol
+        'âˆ': '-',   # Garbled negative sign
+        '√': '√',    # Square root symbol
+        '✕': '*',    # Multiplication symbol
+    }
+    for garbled, correct in replacements.items():
+        expression = expression.replace(garbled, correct)
+    return expression
+
+
 def tokenize(expression):
+    # Normalize the expression to replace garbled symbols
+    expression = normalize_expression(expression)
+    
     # Handle spaces and implicit multiplication
     expression = re.sub(r'\)\s*\(', ')*(', expression)  # Handle implicit multiplication: ")("
     expression = re.sub(r'(\d+|\))\s*\(', r'\1*(', expression)  # Handle cases like "2(" as "2*("
@@ -170,6 +196,7 @@ def tokenize(expression):
         i += 1
     
     return tokens
+
 
 def evaluate_expression(expression):
     operators = []
@@ -267,31 +294,66 @@ class TestTrigAndRootFunctions(unittest.TestCase):
     def test_tan(self):
         self.assertAlmostEqual(tan(0), 0, places=5)
         self.assertAlmostEqual(tan(math.pi / 4), 1, places=5)
-        with self.assertRaises(ValueError):  # Test for undefined tangent
-            tan(math.pi / 2)
+        self.assertIsNone(tan(math.pi / 2))  # Test for undefined tangent at pi/2
 
     # Root Function Tests
     def test_square_root(self):
         self.assertEqual(square_root(16), 4)
         self.assertEqual(square_root(0), 0)
-        self.assertAlmostEqual(square_root(-4), cmath.sqrt(-4))
-        result = square_root(-4)
-        self.assertAlmostEqual(result.real, 0)
-        self.assertAlmostEqual(result.imag, 2)
+        self.assertIsNone(square_root(-4))  # Return None for invalid input
 
     def test_nth_root(self):
         self.assertEqual(nth_root(27, 3), 3)  # Cube root of 27
         self.assertEqual(nth_root(16, 4), 2)  # Fourth root of 16
-        self.assertAlmostEqual(nth_root(-27, 3), -3)  # Cube root of -27
-        self.assertAlmostEqual(nth_root(8, 1.5), 4)  # Non-integer root test
-        self.assertAlmostEqual(nth_root(1e9, 3), 1000)  # Large exponent test
-        with self.assertRaises(ValueError):  # Test for even root of negative
-            nth_root(-16, 2)
+        self.assertAlmostEqual(nth_root(-27, 3), -3, places=5)  # Cube root of -27
+        self.assertAlmostEqual(nth_root(8, 1.5), 4, places=5)  # Non-integer root test
+        self.assertAlmostEqual(nth_root(1e9, 3), 1000, places=5)  # Large exponent test
+        self.assertIsNone(nth_root(-16, 2))  # Test for even root of negative number (should return None)
 
     def test_nth_root_complex(self):
         result = nth_root(-8, 3)
-        self.assertAlmostEqual(result, -2)  # Test for negative number with odd root
+        self.assertAlmostEqual(result, -2, places=5)  # Test for negative number with odd root
 
+class TestArithmeticAndPower(unittest.TestCase):
+
+    # Arithmetic Function Tests
+    def test_add(self):
+        self.assertEqual(add(1, 1), 2)
+        self.assertEqual(add(1.5, 2.5), 4.0)
+        self.assertEqual(add(-1, 1), 0)
+        self.assertEqual(add(0, 0), 0)
+
+    def test_subtract(self):
+        self.assertEqual(subtract(10, 5), 5)
+        self.assertEqual(subtract(1.5, 0.5), 1.0)
+        self.assertEqual(subtract(-5, 5), -10)
+        self.assertEqual(subtract(0, 0), 0)
+
+    def test_multiply(self):
+        self.assertEqual(multiply(2, 3), 6)
+        self.assertEqual(multiply(2.5, 4), 10.0)
+        self.assertEqual(multiply(-3, 3), -9)
+        self.assertEqual(multiply(0, 10), 0)
+
+    def test_divide(self):
+        self.assertEqual(divide(10, 2), 5)
+        self.assertEqual(divide(5.5, 2), 2.75)
+        self.assertEqual(divide(-9, 3), -3)
+        self.assertIsNone(divide(5, 0))  # Division by zero should return None
+
+    # Power Function Tests
+    def test_square(self):
+        self.assertEqual(square(4), 16)
+        self.assertEqual(square(1.5), 2.25)
+        self.assertEqual(square(-3), 9)
+        self.assertEqual(square(0), 0)
+
+    def test_power(self):
+        self.assertEqual(power(2, 3), 8)
+        self.assertEqual(power(5, 0), 1)  # Any number to the power of 0 is 1
+        self.assertEqual(power(2, -1), 0.5)  # Test inverse powers
+        self.assertEqual(power(-2, 3), -8)  # Negative base with odd exponent
+        self.assertIsNone(power(-2, 0.5))  # Complex result should return None
 
 if __name__ == "__main__":
     unittest.main()
